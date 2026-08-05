@@ -1,0 +1,2 @@
+# demostrando_capacidades_openclaw
+proyecto
