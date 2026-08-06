@@ -19,6 +19,7 @@ Durante el proceso:
 - Genera una conclusión final indicando cuál componente es más importante.
 
 Devuelve:
+
 1. Lista de subtareas.
 2. Estado de cada tarea.
 3. Evidencia de memoria utilizada.
