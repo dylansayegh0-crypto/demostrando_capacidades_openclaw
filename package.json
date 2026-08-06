@@ -1,21 +1,33 @@
 {
   "name": "demostrando_capacidades_openclaw",
   "version": "1.0.0",
-  "description": "proyecto",
+  "description": "Checkpoint OpenClaw - TaskFlow con memoria contextual persistente",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test-db.js && node test-memory.js && node test-flow.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dylansayegh0-crypto/demostrando_capacidades_openclaw.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "openclaw",
+    "taskflow",
+    "sqlite",
+    "memory",
+    "ollama",
+    "gpt-5.5"
+  ],
+  "author": "Dylan Sayegh",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
     "url": "https://github.com/dylansayegh0-crypto/demostrando_capacidades_openclaw/issues"
   },
-  "homepage": "https://github.com/dylansayegh0-crypto/demostrando_capacidades_openclaw#readme"
+  "homepage": "https://github.com/dylansayegh0-crypto/demostrando_capacidades_openclaw#readme",
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "dotenv": "^17.4.2",
+    "uuid": "^14.0.1"
+  }
 }
