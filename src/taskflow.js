@@ -1,5 +1,7 @@
 const db = require("./database");
 const { randomUUID } = require("crypto");
+const { retrieval } = require("./memory");
+
 
 
 function createTask(title, subtasks) {
@@ -38,6 +40,7 @@ function createTask(title, subtasks) {
 
 
 
+
 async function executeTask(taskId) {
 
 
@@ -62,8 +65,6 @@ async function executeTask(taskId) {
 
 
 
-    // La tarea comienza ejecución
-
     updateTaskStatus.run(
         "running",
         taskId
@@ -79,10 +80,9 @@ async function executeTask(taskId) {
 
 
 
+
     for (const subtask of subtasks) {
 
-
-        // Estado inicial
 
         updateSubtaskStatus.run(
             "running",
@@ -92,18 +92,45 @@ async function executeTask(taskId) {
 
 
         console.log(
-            `Ejecutando subtarea: ${subtask.description}`
+            `\nEjecutando subtarea: ${subtask.description}`
         );
 
 
 
-       // Simulación de procesamiento del agente sin bloquear el proceso
+        /*
+        Antes de ejecutar la subtarea,
+        el agente consulta memoria contextual
+        */
 
-	await new Promise(resolve => setTimeout(resolve, 300));
+        const context =
+            await retrieval(
+                subtask.description
+            );
 
 
 
-        // Finalización
+        console.log(
+            "Contexto recuperado:"
+        );
+
+
+        console.table(
+            context.slice(0,3)
+        );
+
+
+
+        /*
+        Simulación de procesamiento
+        utilizando contexto recuperado
+        */
+
+
+        await new Promise(
+            resolve => setTimeout(resolve,300)
+        );
+
+
 
         updateSubtaskStatus.run(
             "completed",
@@ -124,6 +151,8 @@ async function executeTask(taskId) {
 
 
 
+
+
 function getSubtasks(taskId) {
 
     return db.prepare(
@@ -132,6 +161,7 @@ function getSubtasks(taskId) {
     .all(taskId);
 
 }
+
 
 
 
