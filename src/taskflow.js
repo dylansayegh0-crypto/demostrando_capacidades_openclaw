@@ -41,6 +41,36 @@ function createTask(title, subtasks) {
 function executeTask(taskId) {
 
 
+    const updateTaskStatus =
+        db.prepare(
+            `
+            UPDATE tasks
+            SET status = ?
+            WHERE id = ?
+            `
+        );
+
+
+    const updateSubtaskStatus =
+        db.prepare(
+            `
+            UPDATE subtasks
+            SET status = ?
+            WHERE id = ?
+            `
+        );
+
+
+
+    // La tarea comienza ejecución
+
+    updateTaskStatus.run(
+        "running",
+        taskId
+    );
+
+
+
     const subtasks =
         db.prepare(
             "SELECT * FROM subtasks WHERE task_id = ?"
@@ -52,27 +82,32 @@ function executeTask(taskId) {
     for (const subtask of subtasks) {
 
 
-        db.prepare(
-            `
-            UPDATE subtasks
-            SET status = ?
-            WHERE id = ?
-            `
-        )
-        .run(
+        // Estado inicial
+
+        updateSubtaskStatus.run(
             "running",
             subtask.id
         );
 
 
-        db.prepare(
-            `
-            UPDATE subtasks
-            SET status = ?
-            WHERE id = ?
-            `
-        )
-        .run(
+
+        console.log(
+            `Ejecutando subtarea: ${subtask.description}`
+        );
+
+
+
+        // Simulación de procesamiento del agente
+
+        const start = Date.now();
+
+        while(Date.now() - start < 300){}
+
+
+
+        // Finalización
+
+        updateSubtaskStatus.run(
             "completed",
             subtask.id
         );
@@ -81,17 +116,11 @@ function executeTask(taskId) {
 
 
 
-    db.prepare(
-        `
-        UPDATE tasks
-        SET status = ?
-        WHERE id = ?
-        `
-    )
-    .run(
+    updateTaskStatus.run(
         "completed",
         taskId
     );
+
 
 }
 
