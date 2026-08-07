@@ -1,124 +1,129 @@
-# Checkpoint OpenClaw - Agente con TaskFlow y Memoria Contextual Persistente
+# OpenClaw Hybrid Agent - TaskFlow y Memoria Contextual Persistente
 
 ## Objetivo
 
 Este proyecto demuestra la implementación de un agente basado en OpenClaw v2026.x capaz de ejecutar flujos de trabajo multietapa mediante:
 
-- Descomposición de tareas.
+- Descomposición automática de tareas.
 - Creación dinámica de subtareas.
+- Gestión del ciclo de vida de ejecución.
 - Persistencia de estados.
 - Memoria contextual persistente.
 - Generación real de embeddings.
 - Recuperación semántica mediante similitud coseno.
 
-La arquitectura validada implementa el siguiente flujo:
+La arquitectura validada combina razonamiento avanzado, ejecución programática y memoria persistente.
+
+Flujo general:
 
 ```text
-Tarea
-  ↓
-Subtareas
-  ↓
+Usuario
+  |
+  v
+GPT-5.5
+  |
+  v
 TaskFlow
-  ↓
-Persistencia SQLite
-  ↓
-Generación de Embeddings
-  ↓
+  |
+  v
+SQLite Persistence
+  |
+  v
+Embeddings
+  |
+  v
 Memoria Contextual
-  ↓
+  |
+  v
 Retrieval Semántico
-  ↓
-Resultado Final
-```
+  |
+  v
+Resultado
 
----
+Entorno utilizado
+OpenClaw: 2026.6.11-beta.2
+Node.js: 24.18.0
+Sistema operativo: Windows
+Agente utilizado: main
 
-# Entorno utilizado
+Gateway local:
 
-- OpenClaw: `2026.6.11-beta.2`
-- Node.js: `24.18.0`
-- Sistema operativo: Windows
-- Agente utilizado: `main`
-
-Gateway configurado:
-
-```
 127.0.0.1:18789
-```
 
-El Gateway permanece restringido al entorno local y no posee exposición pública directa.
+El Gateway permanece restringido al entorno local sin exposición pública directa.
 
----
+Arquitectura híbrida
 
-# Arquitectura general
+La solución implementa una arquitectura separando responsabilidades:
 
-La solución utiliza una arquitectura híbrida:
-
-```text
               GPT-5.5
                  |
-                 ↓
+                 |
+          Razonamiento y planificación
+                 |
+                 v
              TaskFlow
                  |
-                 ↓
-       Motor de Memoria Semántica
                  |
-                 ↓
+          Ejecución de procesos
+                 |
+                 v
+        Motor de Memoria Semántica
+                 |
+                 |
+          Embeddings + Retrieval
+                 |
+                 v
               SQLite
                  |
-                 ↓
-       Recuperación Contextual
-```
+                 |
+          Persistencia contextual
+Componentes principales
+GPT-5.5 como orquestador cognitivo
 
----
-
-# GPT-5.5
-
-GPT-5.5 funciona como componente cognitivo del agente.
+GPT-5.5 funciona como capa superior de razonamiento.
 
 Responsabilidades:
 
-- Interpretación del objetivo.
-- Planificación del flujo.
-- División de tareas complejas.
-- Coordinación de subtareas.
-- Generación de conclusiones.
+Interpretación de objetivos.
+Planificación de tareas.
+División de problemas complejos.
+Coordinación de subtareas.
+Generación de conclusiones.
 
-El modelo actúa como capa de razonamiento superior del sistema.
+El modelo actúa como componente cognitivo del agente.
 
----
-
-# TaskFlow programático
+TaskFlow programático
 
 Archivo:
 
-```
 src/taskflow.js
-```
 
-El proyecto implementa un motor TaskFlow propio mediante Node.js.
+El proyecto implementa un motor TaskFlow propio utilizando Node.js.
 
 Funciones principales:
 
-- Creación de tareas.
-- Creación dinámica de subtareas.
-- Asociación entre tareas y subtareas.
-- Actualización de estados.
-- Persistencia mediante SQLite.
+Creación de tareas.
+Generación dinámica de subtareas.
+Asociación entre tareas y subtareas.
+Actualización persistente de estados.
+Ejecución controlada.
+Manejo asíncrono de procesos.
 
-Cada ejecución genera identificadores únicos mediante UUID.
+Estados implementados:
 
-Estados utilizados:
-
-```
 pending
+   |
+   v
 running
+   |
+   v
 completed
-```
 
-Ejemplo de flujo:
+Cada tarea utiliza identificadores únicos UUID.
 
-```
+Ejemplo:
+
 Tarea principal:
 
 Validación arquitectura híbrida OpenClaw
@@ -129,391 +134,258 @@ Subtareas:
 1. Analizar GPT-5.5 como orquestador cognitivo.
 
 2. Analizar Ollama + nomic-embed-text
-   como generador local de embeddings.
+   como embeddings locales.
 
-3. Analizar SQLite como sistema
-   de memoria persistente.
-```
+3. Analizar SQLite + sqlite-vec
+   como memoria persistente.
+Ejecución asíncrona TaskFlow
 
----
+La última mejora incorpora ejecución no bloqueante:
 
-# Motor de memoria contextual semántica
+Antes:
+
+Procesamiento secuencial bloqueante.
+
+Después:
+
+Ejecución mediante Promises.
+
+Cada subtarea:
+
+pending
+   |
+running
+   |
+completed
+
+Esto permite representar un flujo más cercano a un agente real.
+
+Memoria contextual semántica
 
 Archivo:
 
-```
 src/memory.js
-```
 
-El sistema implementa una memoria contextual basada en embeddings reales.
+El sistema implementa memoria basada en embeddings reales.
 
-La solución utiliza:
+Tecnologías:
 
-```
-Ollama + nomic-embed-text
-```
+Ollama
++
+nomic-embed-text
 
-No utiliza búsqueda por texto ni coincidencias simples.
-
-El funcionamiento es:
-
-```text
-Texto ingresado
-        ↓
-Ollama genera embedding vectorial
-        ↓
-Vector almacenado en SQLite
-        ↓
-Consulta genera nuevo embedding
-        ↓
-Comparación matemática
-        ↓
-Ranking por similitud
-```
-
----
-
-# Ingress
-
-El módulo Ingress permite incorporar nueva información al sistema de memoria.
-
-Ejemplo:
-
-```javascript
-await ingress(
-"SQLite almacena memoria persistente."
-);
-```
+No utiliza búsqueda por texto simple.
 
 Proceso:
 
-```
+Texto ingresado
+
+      ↓
+
+Generación de embedding
+
+      ↓
+
+Vector almacenado
+
+      ↓
+
+Nueva consulta
+
+      ↓
+
+Comparación matemática
+
+      ↓
+
+Ranking semántico
+Ingress
+
+El módulo Ingress permite incorporar información a la memoria.
+
+Ejemplo:
+
+await ingress(
+"SQLite almacena memoria persistente."
+);
+
+Proceso:
+
 Texto
  ↓
 Embedding
  ↓
-Persistencia SQLite
-```
+SQLite
 
-Los datos son almacenados en la tabla:
+Los datos se almacenan en:
 
-```
-memories
-```
-
-dentro de:
-
-```
 storage/taskflow.db
-```
+Retrieval Semántico
 
----
-
-# Retrieval Semántico
-
-La recuperación utiliza similitud coseno entre vectores.
+La recuperación utiliza similitud coseno.
 
 Proceso:
 
-1. Se genera el embedding de la consulta.
-2. Se consultan memorias almacenadas.
-3. Se calcula similitud entre vectores.
-4. Se ordenan resultados por relevancia.
+La consulta genera un embedding.
+Se buscan memorias existentes.
+Se comparan vectores.
+Se ordenan resultados por similitud.
 
 Ejemplo:
 
 Consulta:
 
-```
 memoria persistente
-```
 
 Resultado:
 
-```
 SQLite almacena memoria persistente.
 
 Similarity: 0.94
 
+Esto demuestra recuperación basada en significado.
 
-Ollama genera embeddings locales.
-
-Similarity: 0.40
-
-
-GPT-5.5 es el motor de razonamiento.
-
-Similarity: 0.40
-```
-
-Esto demuestra recuperación basada en significado y no solamente coincidencia textual.
-
----
-
-# Ollama + nomic-embed-text
+Ollama + nomic-embed-text
 
 Ollama funciona como motor local de embeddings.
 
 Responsabilidades:
 
-- Conversión de texto a vectores.
-- Representación semántica.
-- Generación de información utilizada por Retrieval.
+Conversión texto → vector.
+Representación semántica.
+Generación de información para Retrieval.
 
-Modelo utilizado:
+Modelo:
 
-```
 nomic-embed-text
-```
 
 Servicio local:
 
-```
 http://127.0.0.1:11434
-```
-
----
-
-# Persistencia SQLite
+Persistencia SQLite
 
 Archivo:
 
-```
 src/database.js
-```
 
-La persistencia utiliza:
+Motor utilizado:
 
-```
 better-sqlite3
-```
 
-Base generada:
+Base:
 
-```
 storage/taskflow.db
-```
 
-La base contiene las siguientes tablas:
+Tablas principales:
 
----
-
-## Tabla tasks
-
-```
+tasks
 id
 title
 status
-```
 
-Almacena las tareas principales.
+Almacena tareas principales.
 
----
-
-## Tabla subtasks
-
-```
+subtasks
 id
 task_id
 description
 status
-```
 
-Almacena las subtareas asociadas.
+Almacena subtareas asociadas.
 
----
-
-## Tabla memories
-
-```
+memories
 id
 text
 embedding
 created_at
-```
 
 Almacena:
 
-- Texto contextual.
-- Vector generado por Ollama.
-- Fecha de creación.
-
----
-
-# Implementación propia
-
-Además de la integración con OpenClaw, el proyecto implementa:
-
-- Motor TaskFlow propio.
-- Sistema de memoria semántica.
-- Persistencia vectorial mediante SQLite.
-- Generación de embeddings locales.
-- Recuperación mediante similitud coseno.
-- Pruebas automatizadas.
-
----
-
-# Flujo validado
-
-La ejecución completa valida:
-
-```text
-Crear tarea
-      ↓
-Crear subtareas
-      ↓
-Guardar estados iniciales
-      ↓
-Ejecutar TaskFlow
-      ↓
-Actualizar estados
-      ↓
-Guardar memoria
-      ↓
-Recuperar información semántica
-```
-
-Resultado:
-
-```
-GPT-5.5       completed
-
-Memory        completed
-
-SQLite        completed
-```
-
----
-
-# Evidencia de ejecución
+Información contextual.
+Embeddings.
+Fecha de creación.
+Evidencia de ejecución
 
 Los resultados quedan registrados en:
 
-```
 logs/taskflow-result.txt
-```
 
-La evidencia contiene:
+Incluye:
 
-- Subtareas creadas.
-- Estados finales.
-- Memoria utilizada.
-- Resultados del retrieval semántico.
+Subtareas creadas.
+Estados finales.
+Memoria utilizada.
+Resultado del Retrieval.
 
-Memoria contextual utilizada:
+Memoria utilizada:
 
-```
 memory/2026-08-06.md
-```
+Pruebas automatizadas
 
----
+Ejecutar:
 
-# Pruebas automatizadas
-
-El proyecto incorpora:
-
-```bash
 npm test
-```
 
-El comando ejecuta:
+Ejecuta:
 
-```
 test-db.js
 test-memory.js
 test-flow.js
-```
 
-Validando:
+Validaciones:
 
-- Creación de tareas.
-- Persistencia SQLite.
-- Generación de embeddings.
-- Recuperación semántica.
-- Ejecución del TaskFlow.
-- Integración con OpenClaw.
-
----
-
-# Resultado actual de validación
+Base SQLite.
+Creación de tareas.
+Persistencia.
+Embeddings.
+Retrieval semántico.
+Ejecución TaskFlow.
+Integración OpenClaw.
+Resultado de validación
 
 Última ejecución:
 
-```bash
 npm test
-```
 
 Resultado:
 
-```
-TaskFlow creado correctamente.
-
-Subtareas generadas:
-
-Analizar GPT-5.5
-Analizar Ollama + nomic-embed-text
-Analizar SQLite + sqlite-vec
-
-
-Estado inicial:
-
-pending
-
-
-Estado final:
-
-completed
-```
-
-Retrieval:
-
-```
 === Retrieval Semántico ===
 
 SQLite almacena memoria persistente.
-Similarity: 0.94
-```
 
----
+Similarity:
+0.94
 
-# Manejo de integración externa
 
-La integración con OpenClaw depende del proveedor externo.
+=== Test TaskFlow OpenClaw ===
 
-Si ocurre:
+Subtareas ejecutadas correctamente.
 
-- Falta de respuesta.
-- Límite de cuota.
-- Problemas de autenticación.
 
-El sistema:
+VALIDACIÓN COMPLETADA
+Manejo de integración externa
 
-- Detecta timeout.
-- Mantiene funcionando TaskFlow.
-- Mantiene funcionando SQLite.
-- Mantiene funcionando la memoria semántica.
+La arquitectura permite continuar funcionando aunque el proveedor externo no responda.
 
-Ejemplo:
+Casos contemplados:
 
-```
-TIMEOUT: OpenClaw no respondió
-```
+Timeout.
+Falta de respuesta.
+Problemas de autenticación.
 
-La validación local continúa correctamente.
+El sistema mantiene:
 
----
-
-# Variables de entorno
+TaskFlow funcionando.
+SQLite funcionando.
+Memoria semántica funcionando.
+Variables de entorno
 
 Archivo:
 
-```
 .env.example
-```
 
 Configuración:
 
-```env
 OPENAI_API_KEY=
 
 OLLAMA_HOST=http://127.0.0.1:11434
@@ -523,31 +395,18 @@ DATABASE_PATH=storage/taskflow.db
 OPENCLAW_AGENT=main
 
 OPENCLAW_GATEWAY=http://127.0.0.1:18789
-```
+Portabilidad
 
----
+El proyecto utiliza rutas relativas mediante:
 
-# Portabilidad
-
-Los scripts utilizan rutas relativas mediante:
-
-```javascript
 path.join()
-```
 
-Esto elimina dependencias de rutas absolutas.
+Compatible con:
 
-El proyecto puede ejecutarse en:
-
-- Windows
-- Linux
-- macOS
-
----
-
-# Estructura del proyecto
-
-```
+Windows
+Linux
+macOS
+Estructura del proyecto
 demostrando_capacidades_openclaw
 
 ├── src
@@ -556,7 +415,7 @@ demostrando_capacidades_openclaw
 │   └── taskflow.js
 │
 ├── storage
-│   ├── taskflow.db
+│   └── taskflow.db
 │
 ├── memory
 │   └── 2026-08-06.md
@@ -564,90 +423,97 @@ demostrando_capacidades_openclaw
 ├── logs
 │   └── taskflow-result.txt
 │
+├── docs
+│   └── architecture.md
+│
 ├── test-db.js
 ├── test-memory.js
 ├── test-flow.js
-├── .env.example
 ├── package.json
+├── .env.example
 └── README.md
-```
-
----
-
-# Mejoras realizadas después de la primera revisión
-
-## Memoria contextual
+Mejoras realizadas
+Memoria
 
 Antes:
 
-```
-Búsqueda básica mediante coincidencia de texto.
-```
+Búsqueda básica por texto.
 
 Después:
 
-```
-Embeddings reales mediante Ollama.
+Embeddings reales.
 Similitud coseno.
 Ranking semántico.
-Persistencia vectorial en SQLite.
-```
-
----
-
-## TaskFlow
+Persistencia vectorial.
+TaskFlow
 
 Antes:
 
-```
-Estados definidos de forma fija.
-```
+Estados simples.
 
 Después:
 
-```
 Estados persistentes.
-Estados dinámicos:
-pending → completed
+
+pending
+running
+completed
 
 UUID únicos.
-Ejecución real de subtareas.
-```
-
----
-
-## Portabilidad
+Ejecución asíncrona.
+Arquitectura
 
 Antes:
 
-```
-Rutas absolutas dependientes del sistema.
-```
+Componentes aislados.
 
 Después:
 
-```
-Uso de path.join().
-Compatibilidad multiplataforma.
-```
+Razonamiento
+      |
+Ejecución
+      |
+Memoria
+      |
+Recuperación
+      |
+Resultado
+Historial de mejoras principales
 
----
+Últimos commits:
 
-# Conclusión final
+63cf821 Add OpenClaw hybrid architecture documentation
 
-Este proyecto demuestra una arquitectura completa de agente utilizando OpenClaw con:
+7a9ce60 Improve TaskFlow async execution lifecycle
 
-- GPT-5.5 para razonamiento.
-- TaskFlow para gestión de procesos.
-- Ollama + nomic-embed-text para embeddings locales.
-- SQLite para persistencia.
-- Memoria contextual semántica.
-- Recuperación mediante similitud coseno.
-- Pruebas automatizadas reproducibles.
+06d599a Add final validation evidence
+
+b415090 Improve semantic memory validation evidence
+
+61457df Improve TaskFlow execution lifecycle
+Conclusión final
+
+Este proyecto demuestra una arquitectura completa de agente inteligente utilizando:
+
+OpenClaw.
+GPT-5.5 para razonamiento.
+TaskFlow para ejecución.
+Ollama + nomic-embed-text para embeddings.
+SQLite para persistencia.
+Memoria contextual semántica.
+Recuperación mediante similitud coseno.
+Pruebas automatizadas reproducibles.
+
+La validación completa se reproduce mediante:
+
+npm test
+
+obteniendo:
+
+VALIDACIÓN COMPLETADA
 
 La arquitectura separa claramente:
 
-```text
 Razonamiento
       ↓
 Ejecución
@@ -657,12 +523,13 @@ Memoria
 Recuperación
       ↓
 Resultado
-```
+OpenClaw Hybrid Agent - v1.0 Validation
 
-La validación completa se reproduce mediante:
+Después de pegarlo:
 
-```bash
-npm test
-```
+```powershell
+git add README.md
+git commit -m "Update README with final OpenClaw architecture documentation"
+git push
 
-obteniendo una comprobación automática de todos los componentes principales del sistema.
+Con eso queda con presentación de proyecto profesional.
