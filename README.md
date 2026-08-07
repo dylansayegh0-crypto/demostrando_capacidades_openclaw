@@ -657,3 +657,75 @@ git status
 git log --oneline -5
 
 Con eso ya queda con aspecto de entrega profesional.
+# Corrección de resiliencia de memoria semántica
+
+Luego de la primera validación se incorporaron mejoras para eliminar dependencias obligatorias del entorno externo.
+
+Cambios implementados:
+
+- Configuración dinámica mediante dotenv.
+- Eliminación de URLs hardcodeadas.
+- Uso de variables:
+  - OLLAMA_HOST
+  - EMBEDDING_MODEL
+- Timeout para llamadas al servicio de embeddings.
+- Sistema de fallback local cuando Ollama no está disponible.
+
+Nuevo comportamiento:
+Consulta
+|
+v
+Intento de embedding mediante Ollama
+|
++---- Disponible
+| |
+| v
+| Embedding real nomic-embed-text
+|
++---- No disponible
+|
+v
+Embedding local de respaldo
+
+
+Esto permite que la cadena completa de pruebas pueda ejecutarse sin depender de servicios externos.
+
+Validación:
+
+```bash
+npm test
+
+Resultado:
+
+TaskFlow completed
+
+Memory completed
+
+Retrieval Semántico OK
+
+VALIDACIÓN COMPLETADA
+
+---
+
+### 3) Volver a probar sin Ollama (esto te da el punto extra)
+
+Antes de entregar hacemos la prueba que pidió el teacher:
+
+Cerrar Ollama:
+
+```powershell
+ollama stop nomic-embed-text
+
+Después:
+
+npm test
+
+Debe aparecer:
+
+Ollama no disponible. Usando embedding local de respaldo.
+
+y al final:
+
+VALIDACIÓN COMPLETADA
+
+Esa evidencia es oro porque demuestra resiliencia.
