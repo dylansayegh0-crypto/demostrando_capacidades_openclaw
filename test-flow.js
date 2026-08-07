@@ -10,70 +10,78 @@ console.log("=== Test TaskFlow OpenClaw ===");
 console.log("=================================");
 
 
-try {
+async function main() {
 
-    const taskId = createTask(
-        "Validación arquitectura híbrida OpenClaw",
-        [
-            "Analizar GPT-5.5 como orquestador cognitivo",
-            "Analizar Ollama + nomic-embed-text como embeddings locales",
-            "Analizar SQLite + sqlite-vec como memoria persistente"
-        ]
-    );
+    try {
 
-
-    console.log("\nTask creada:");
-    console.log(taskId);
+        const taskId = createTask(
+            "Validación arquitectura híbrida OpenClaw",
+            [
+                "Analizar GPT-5.5 como orquestador cognitivo",
+                "Analizar Ollama + nomic-embed-text como embeddings locales",
+                "Analizar SQLite + sqlite-vec como memoria persistente"
+            ]
+        );
 
 
-    console.log("\nEstado inicial:");
-    
-    console.table(
-        getSubtasks(taskId)
-    );
+        console.log("\nTask creada:");
+        console.log(taskId);
 
 
-    console.log("\nEjecutando TaskFlow...");
+        console.log("\nEstado inicial:");
+
+        console.table(
+            getSubtasks(taskId)
+        );
 
 
-    executeTask(taskId);
+        console.log("\nEjecutando TaskFlow...");
 
 
-    console.log("\nEstado final:");
-
-    console.table(
-        getSubtasks(taskId)
-    );
+        await executeTask(taskId);
 
 
-    console.log("");
-    console.log("=================================");
-    console.log("=== Test de integración OpenClaw ===");
-    console.log("=================================");
+        console.log("\nEstado final:");
 
-    console.log(
-        "La integración externa se valida mediante el agente configurado."
-    );
-
-    console.log(
-        "Si el proveedor externo no responde, la validación local continúa."
-    );
+        console.table(
+            getSubtasks(taskId)
+        );
 
 
-    console.log("");
-    console.log("VALIDACIÓN COMPLETADA");
+        console.log("");
+        console.log("=================================");
+        console.log("=== Test de integración OpenClaw ===");
+        console.log("=================================");
 
 
-} catch(error) {
+        console.log(
+            "La integración externa se valida mediante el agente configurado."
+        );
 
-    console.error("");
+        console.log(
+            "Si el proveedor externo no responde, la validación local continúa."
+        );
 
-    console.error("===============================");
-    console.error("ERROR EN TEST TASKFLOW");
-    console.error("===============================");
 
-    console.error(error.message);
+        console.log("");
+        console.log("VALIDACIÓN COMPLETADA");
 
-    process.exit(1);
+
+    } catch(error) {
+
+        console.error("");
+
+        console.error("===============================");
+        console.error("ERROR EN TEST TASKFLOW");
+        console.error("===============================");
+
+        console.error(error.message);
+
+        process.exit(1);
+
+    }
 
 }
+
+
+main();

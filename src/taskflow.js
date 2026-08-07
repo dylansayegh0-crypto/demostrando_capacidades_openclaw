@@ -38,7 +38,7 @@ function createTask(title, subtasks) {
 
 
 
-function executeTask(taskId) {
+async function executeTask(taskId) {
 
 
     const updateTaskStatus =
@@ -97,11 +97,9 @@ function executeTask(taskId) {
 
 
 
-        // Simulación de procesamiento del agente
+       // Simulación de procesamiento del agente sin bloquear el proceso
 
-        const start = Date.now();
-
-        while(Date.now() - start < 300){}
+	await new Promise(resolve => setTimeout(resolve, 300));
 
 
 
