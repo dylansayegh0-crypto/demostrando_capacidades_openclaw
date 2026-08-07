@@ -1,46 +1,106 @@
-const fs = require("fs");
-const path = require("path");
+const db = require("./database");
+const axios = require("axios");
 
-const memoryFile = path.join(__dirname, "..", "storage", "vectors.json");
+async function createEmbedding(text) {
 
-function loadMemory() {
-    if (!fs.existsSync(memoryFile)) {
-        return [];
+    const response = await axios.post(
+        "http://localhost:11434/api/embeddings",
+        {
+            model: "nomic-embed-text",
+            prompt: text
+        }
+    );
+
+    return response.data.embedding;
+}
+
+
+// Cosine similarity
+function cosineSimilarity(a, b) {
+
+    let dot = 0;
+    let normA = 0;
+    let normB = 0;
+
+    for (let i = 0; i < a.length; i++) {
+
+        dot += a[i] * b[i];
+        normA += a[i] * a[i];
+        normB += b[i] * b[i];
+
     }
 
-    return JSON.parse(fs.readFileSync(memoryFile, "utf8"));
+    return dot /
+        (Math.sqrt(normA) * Math.sqrt(normB));
 }
 
-function saveMemory(memory) {
-    fs.writeFileSync(
-        memoryFile,
-        JSON.stringify(memory, null, 2)
-    );
-}
 
-// Ingress
-function ingress(text) {
+// INGRESSION
+async function ingress(text) {
 
-    const memory = loadMemory();
+    const embedding = await createEmbedding(text);
 
-    memory.push({
-        id: Date.now(),
-        text
-    });
-
-    saveMemory(memory);
-}
-
-// Retrieval
-function retrieval(query) {
-
-    const memory = loadMemory();
-
-    return memory.filter(item =>
-        item.text.toLowerCase().includes(query.toLowerCase())
+    db.prepare(`
+        INSERT INTO memories
+        (
+            text,
+            embedding
+        )
+        VALUES
+        (?,?)
+    `)
+    .run(
+        text,
+        JSON.stringify(embedding)
     );
 
 }
+
+
+// RETRIEVAL SEMÁNTICO
+async function retrieval(query) {
+
+
+    const queryEmbedding =
+        await createEmbedding(query);
+
+
+    const rows =
+        db.prepare(`
+            SELECT *
+            FROM memories
+        `)
+        .all();
+
+
+    return rows
+        .map(item => {
+
+            const vector =
+                JSON.parse(item.embedding);
+
+
+            return {
+
+                text:item.text,
+
+                similarity:
+                    cosineSimilarity(
+                        queryEmbedding,
+                        vector
+                    )
+
+            };
+
+        })
+        .sort(
+            (a,b)=>
+            b.similarity-a.similarity
+        )
+        .slice(0,5);
+
+}
+
 
 module.exports = {
     ingress,

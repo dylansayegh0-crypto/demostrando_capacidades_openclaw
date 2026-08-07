@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/dylansayegh0-crypto/demostrando_capacidades_openclaw#readme",
   "dependencies": {
+    "axios": "^1.19.0",
     "better-sqlite3": "^13.0.3",
     "dotenv": "^17.4.2",
     "uuid": "^14.0.1"

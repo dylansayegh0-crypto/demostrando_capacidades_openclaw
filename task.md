@@ -14,12 +14,13 @@ Analizar cómo SQLite con sqlite-vec permite memoria persistente.
 
 Durante el proceso:
 
-- Guarda los conceptos importantes en memoria contextual.
+- Guarda conceptos importantes en memoria contextual.
 - Recupera información mediante búsqueda semántica.
-- Genera una conclusión final indicando cuál componente es más importante.
+- Genera una conclusión final.
 
 Devuelve:
 
 1. Lista de subtareas.
 2. Estado de cada tarea.
 3. Evidencia de memoria utilizada.
+4. Resultado final.
