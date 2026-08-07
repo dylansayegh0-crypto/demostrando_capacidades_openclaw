@@ -458,3 +458,5 @@ npm test
 ```
 
 obteniendo una validación automática de todos los componentes principales.
+
+En caso de que el proveedor externo OpenAI/Codex no responda o alcance límites de uso, el test de integración finaliza mediante un timeout controlado, sin afectar la validación local de TaskFlow, persistencia SQLite y recuperación de memoria contextual.
